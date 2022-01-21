@@ -61,7 +61,7 @@ const DeleteCourse = asyncHandler(async (req, res) => {
   }
 
   if (course) {
-    await note.remove();
+    await course.remove();
     res.json({ message: "course Removed" });
   } else {
     res.status(404);
