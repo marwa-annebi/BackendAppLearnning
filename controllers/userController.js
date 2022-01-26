@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
-const { is } = require("express/lib/request");
 const User = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
+
 const registerUser = asyncHandler(async (req, res) => {
   const { first_name, email, password, isTeacher, pic } = req.body;
   const userExists = await User.findOne({ email });
@@ -73,7 +73,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const CreateUser = asyncHandler(async (req, res) => {
-  const { first_name, email, password,isTeacher,isAdmin } = req.body;
+  const { first_name, email, password, isTeacher, isAdmin } = req.body;
 
   if (!first_name || !email || !password) {
     res.status(400);
@@ -95,24 +95,51 @@ const CreateUser = asyncHandler(async (req, res) => {
 });
 
 const UpdateUser = asyncHandler(async (req, res) => {
-  const { first_name, email, password, isAdmin, isTeacher } = req.body;
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body },
+      { new: true }
+    );
+    const update = await updatedUser.save();
 
-  const user = await User.findById(req.params.id);
-
+    res.send(update);
+  } catch (error) {
+    console.error(error);
+  }
+});
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
 
   if (user) {
-    user.first_name = first_name;
-    user.email = email;
-    user.password = password;
-    user.isAdmin = isAdmin;
-    user.isTeacher = isTeacher;
+    user.first_name = req.body.first_name || user.first_name;
+    user.email = req.body.email || user.email;
+    user.pic = req.body.pic || user.pic;
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+    const update = await user.save();
 
-    const updatedUser = await user.save();
-    res.json(updatedUser);
+    res.json({
+      _id: update._id,
+      first_name: update.first_name,
+      email: update.email,
+      pic: update.pic,
+      isAdmin: update.isAdmin,
+      token: generateToken(update._id),
+    });
   } else {
     res.status(404);
-    throw new Error("User not found");
+    throw new Error("User Not Found");
   }
 });
 
-module.exports = { registerUser, loginUser, getUsers, deleteUser, CreateUser,UpdateUser };
+module.exports = {
+  registerUser,
+  loginUser,
+  getUsers,
+  deleteUser,
+  CreateUser,
+  UpdateUser,
+  updateUserProfile,
+};

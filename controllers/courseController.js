@@ -1,14 +1,13 @@
-const Course = require("../models/noteModel.js");
+const Course = require("./../models/courseModel");
+const asyncHandler = require("express-async-handler");
 
-// @desc    Get logged in user notes
-// @route   GET /api/notes
 // @access  Private
 const getCourses = asyncHandler(async (req, res) => {
   const courses = await Course.find({ user: req.user._id });
   res.json(courses);
 });
 
-//@description     Fetch single Note
+//@description     Fetch single Course
 //@route           GET /api/notes/:id
 //@access          Public
 const getCourseById = asyncHandler(async (req, res) => {
@@ -17,31 +16,24 @@ const getCourseById = asyncHandler(async (req, res) => {
   if (course) {
     res.json(course);
   } else {
-    res.status(404).json({ message: "course not found" });
+    res.status(404).json({ message: "Course not found" });
   }
 
   res.json(course);
 });
 
-//@description     Create single Note
+//@description     Create single Course
 //@route           GET /api/notes/create
 //@access          Private
 const CreateCourse = asyncHandler(async (req, res) => {
-  const { title, description, date, imageUrl, file } = req.body;
+  const { title, content, category } = req.body;
 
-  if (!title || !description || !date || !imageUrl || !file) {
+  if (!title || !content || !category) {
     res.status(400);
     throw new Error("Please Fill all the feilds");
     return;
   } else {
-    const course = new Course({
-      user: req.user._id,
-      title,
-      description,
-      date,
-      imageUrl,
-      file,
-    });
+    const course = new Course({ user: req.user._id, title, content, category });
 
     const createdNote = await course.save();
 
@@ -49,11 +41,11 @@ const CreateCourse = asyncHandler(async (req, res) => {
   }
 });
 
-//@description     Delete single Note
+//@description     Delete single Course
 //@route           GET /api/notes/:id
 //@access          Private
 const DeleteCourse = asyncHandler(async (req, res) => {
-  const course = await Note.findById(req.params.id);
+  const course = await Course.findById(req.params.id);
 
   if (course.user.toString() !== req.user._id.toString()) {
     res.status(401);
@@ -62,18 +54,18 @@ const DeleteCourse = asyncHandler(async (req, res) => {
 
   if (course) {
     await course.remove();
-    res.json({ message: "course Removed" });
+    res.json({ message: "CourseRemoved" });
   } else {
     res.status(404);
-    throw new Error("course not Found");
+    throw new Error("Coursenot Found");
   }
 });
 
-// @desc    Update a note
+// @desc    Update a course
 // @route   PUT /api/notes/:id
 // @access  Private
 const UpdateCourse = asyncHandler(async (req, res) => {
-  const { title, description, date, imageUrl, file } = req.body;
+  const { title, content, category } = req.body;
 
   const course = await Course.findById(req.params.id);
 
@@ -84,17 +76,15 @@ const UpdateCourse = asyncHandler(async (req, res) => {
 
   if (course) {
     course.title = title;
-    course.description = description;
-    course.date = date;
-    course.imageUrl = imageUrl;
-    course.file = file;
+    course.content = content;
+    course.category = category;
 
-    const updatedCourse = await course.save();
-    res.json(updatedCourse);
+    const updatedNote = await course.save();
+    res.json(updatedNote);
   } else {
     res.status(404);
-    throw new Error("Course not found");
+    throw new Error("Coursenot found");
   }
 });
 
-export { getCourseById, getCourses, CreateCourse, DeleteCourse, UpdateCourse };
+module.exports = { getCourseById, getCourses, CreateCourse, DeleteCourse, UpdateCourse };

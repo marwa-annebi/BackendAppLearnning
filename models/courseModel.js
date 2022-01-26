@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const courseSchema = mongoose.Schema(
   {
@@ -6,20 +6,19 @@ const courseSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    description: {
+    content: {
       type: String,
       required: true,
     },
-    date: {
-      type: Date,
-      default: Date.now(),
+    category: {
+      type: String,
+      required: true,
     },
-    imageUrl: { type: String, required: true },
-    file: { type: String, required: true },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Teacher",
+      ref: "User",
     },
   },
   {
@@ -27,6 +26,6 @@ const courseSchema = mongoose.Schema(
   }
 );
 
-const Course = mongoose.model("Note", courseSchema);
+const Course = mongoose.model("Course", courseSchema);
 
-export default Course;
+module.exports = Course;

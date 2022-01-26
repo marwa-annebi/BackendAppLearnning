@@ -1,4 +1,3 @@
-
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const jwt =require("jsonwebtoken")
@@ -14,14 +13,14 @@ const protect = asyncHandler(async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
 
       //decodes token id
-      const decoded = jsonwebtoken.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.user = await User.findById(decoded.id).select("-password");
 
       next();
     } catch (error) {
       res.status(401);
-      throw new Error("Not authorized, token failed");
+      throw new Error("Not authpathorized, token failed");
     }
   }
 
@@ -31,4 +30,4 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { protect };
+module.exports= { protect };
