@@ -14,7 +14,16 @@ const courseSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-
+  
+    file: {
+      type: String,
+      // required: true,
+    },
+    imageUrl: {
+      type: String,
+      default:
+        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

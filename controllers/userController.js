@@ -73,7 +73,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const CreateUser = asyncHandler(async (req, res) => {
-  const { first_name, email, password, isTeacher, isAdmin } = req.body;
+  const { first_name, email, password, pic, isTeacher, isAdmin } = req.body;
 
   if (!first_name || !email || !password) {
     res.status(400);
@@ -83,7 +83,9 @@ const CreateUser = asyncHandler(async (req, res) => {
     const user = new User({
       first_name: first_name,
       email: email,
+
       password: password,
+      pic: pic,
       isTeacher: isTeacher,
       isAdmin: isAdmin,
     });
